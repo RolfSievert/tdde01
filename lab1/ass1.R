@@ -1,5 +1,5 @@
 # Search for function: RSiteSearch(”expression")
-
+library("kknn")
 # 1.1
 
 # Set working directory
@@ -38,10 +38,17 @@ cat((sum(table_train_0.5[2]) + sum(table_train_0.5[3]))/sum(table_train_0.5[1:4]
 cat("\n\n");
 # 1.3
 table_test_0.9 = table(test$Spam, predict_test > 0.9)
+table_train_0.9 = table(train$Spam, predict_train > 0.9)
 cat("Prediction with GML model, test data. 0.9")
 print(table_test_0.9)
 cat("Missclassification rate:")
 cat((sum(table_test_0.9[2]) + sum(table_test_0.9[3]))/sum(table_test_0.9[1:4]))
+cat("\n\n");
+
+cat("Prediction with GML model, train data. 0.9")
+print(table_train_0.9)
+cat("Missclassification rate:")
+cat((sum(table_train_0.9[2]) + sum(table_train_0.9[3]))/sum(table_train_0.9[1:4]))
 cat("\n\n");
 
 # 1.4
@@ -74,7 +81,7 @@ print(table_kknn_test)
 cat("Missclassification rate:")
 cat((sum(table_kknn_test[2]) + sum(table_kknn_test[3]))/sum(table_kknn_test[1:4]))
 cat("\n\n");
-cat("KKNN result using test data train for K=!")
+cat("KKNN result using test data train for K=1")
 print(table_kknn_train)
 cat("Missclassification rate:")
 cat((sum(table_kknn_train[2]) + sum(table_kknn_train[3]))/sum(table_kknn_train[1:4]))

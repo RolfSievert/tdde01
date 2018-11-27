@@ -1,0 +1,20 @@
+# Add libraries
+library("gridExtra")
+library("ggplot2")
+library("MASS")
+
+# Set working directory
+setwd("~/courses/tdde01/lab2")
+
+# Read data
+crabs = read.csv("australian-crabs.csv")
+
+crabs.plot = ggplot(data = crabs, mapping = aes(x=CL, y=RW, color=sex)) + 
+    geom_point() + 
+    ggtitle("Actual sex")
+lda.model = lda(formula = sex~CL+RW, data = crabs)
+lda.predict = predict(lda.model, crabs)
+crabs.predict = ggplot(data = crabs, mapping = aes(x=CL, y=RW, color=lda.predict$class)) + 
+    geom_point() + 
+    ggtitle("Predicted sex")
+grid.arrange(crabs.plot, crabs.predict)

@@ -19,7 +19,7 @@ pxt = function(x, theta){
 thetas = seq(from=0, to=2, by=0.005)
 theta_fn = sapply(thetas, function(theta) pxt(data$Length, theta))
 #par(mar=c(1,1,1,1))
-plot(1:length(thetas), theta_fn, xlabel="X", ylabel="Y", type="p")
+plot(thetas, theta_fn, xlabel="X", ylabel="Y", type="p")
 theta_max = thetas[which.max(theta_fn)]
 cat("Max theta value: ")
 cat(theta_max)
@@ -28,9 +28,9 @@ cat("\n\n")
 # 2.3
 short_data = data$Length[1:6]
 short_theta_fn = sapply(thetas, function(theta) pxt(short_data, theta))
-par(mar=c(2,2,2,1))
-plot(1:length(thetas), theta_fn, xlabel="X", ylabel="Y", type="l", ylim=c(-60, 0))
-lines(1:length(thetas), short_theta_fn, col="blue")
+par(mar=c(4,4,2,1))
+plot(thetas, theta_fn, xlab="Theta", ylab="", type="l", ylim=c(-100, 0))
+lines(thetas, short_theta_fn, col="blue")
 short_theta_max = thetas[which.max(short_theta_fn)]
 cat("Max theta value of short dataset: ")
 cat(short_theta_max)
@@ -48,12 +48,12 @@ l = function(x, theta){
 }
 theta_fn = sapply(thetas, function(theta) l(data$Length, theta))
 l_max = thetas[which.max(theta_fn)]
-lines(1:length(thetas), theta_fn, col="red")
+lines(thetas, theta_fn, col="red")
 cat("Max theta value: ")
 cat(l_max)
 cat("\n\n")
 
 # 2.5
 new_data = rexp(50, theta_max)
-hist(new_data)
-hist(data$Length)
+hist(new_data, main="Random values, exponential distribution", xlab="")
+hist(data$Length, main="Original data", xlab="")
