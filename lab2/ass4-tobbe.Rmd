@@ -1,0 +1,93 @@
+# Assignment 4: Principal components
+
+The assignment was to use near-infrared spectrometry data to predict the viscosity of diesel fuels.
+
+## 4-1
+
+```{r, echo=F, results='hide', message=F}
+#-----------# 4: Principal components #-----------#
+
+# Requirements (only for plotting)
+require("gridExtra")
+require("ggplot2")
+require("MASS")
+
+# Import data
+OrigSpectra <- read.csv2("NIRSpectra.csv")
+spectra <- OrigSpectra 
+spectra$Viscosity = c() # Remove target so it does not get interpreted as a predictor
+# Perform PCA
+PCA=prcomp(spectra)
+lambda=PCA$sdev^2
+#screeplot(PCA, main = "Variance of PCA components in descending order") # presents variation itself, not proportional!
+pr_var <- lambda/sum(lambda)*100
+#sprintf("%2.3f",pr_var) # proportion of variation  
+x = 1:7
+var = pr_var[x]
+DF <- data.frame(x, var) # Convert to data frame
+ggplot(data=NULL) + geom_col(data = DF, aes(x=x, y=var, fill="red", colour = "red"))+labs(title="Proportional variance vs. PCs" ,x="PC", y="Proportional variance") +theme(legend.position="none")
+PC1_PC2_var = sum((lambda/sum(lambda)*100)[1:2]) # -> 99.64 % of variation is contained in PC1 and PC2
+```
+
+The figure above shows the proportion of the variance that is explained by the first seven principal components (PCs). `r PC1_PC2_var`% of the variation is explained by only PC1 and PC2, and they are selected for the upcoming tasks because very little information will be added by choosing a more complex model involving additional PCs. The data is shown in the space of PC1 and PC2 below. Some of the fuels seem unusual since there are some very dramatic outliers along PC1. However, maybe this is one of those fraction of percentages variations that we omit by only choosing PC1 and PC2 to describe the features.
+
+```{r, results = 'hide', echo=F}
+# Plot in coordinates of PC1 and PC2
+PC1 = PCA$x[,1]
+PC2 = PCA$x[,2]
+PCsubset = data.frame(PC1, PC2) # Data projected along PC components
+ggplot(data= PCsubset, aes(x = PC1, y = PC2)) + geom_point(col = "blue")
+```
+
+
+## 4-2
+
+Traceplots showing the loadings of PC1 (black) and PC2 (red triangles), i.e. the amount PC1 and PC2 depends on each of the 127 NIR channels are shown in the figures below. While PC1 seems to be a linear combination of small contributions from almost every channel PC2 is mostly explained by a handful of features in the region ~X810-X827.
+
+```{r, echo = F, results='hide'}
+# Trace plots
+L1 = PCA$rotation[,1]
+L2 = PCA$rotation[,2]
+L <- data.frame(L1, L2)
+p1 <- ggplot(data=L, aes(x=seq_along(L1)+750,y=L1))+geom_point(col = "black")+labs(x="NIR spectra", y="Loadings of PC1")
+p2 <- ggplot(data=L, aes(x=seq_along(L2)+750,y=L2))+geom_point(col = "red", shape = "triangle")+labs(x="NIR spectra", y="Loadings of PC2")
+grid.arrange(p1,p2,ncol = 2)
+```
+
+## 4-3
+
+Independent component analysis (ICA) was performed to compare with the PCA results, after resetting the random number generator seed.
+
+### a)
+
+The loadings of the first two components of the ICA, computed as the first two columns of the matrix $W^{'} = KX$ (ouput vectors of the algorithm) are presented in the figure below:
+
+```{r, results = 'hide', echo = F, message =F}
+# Fast ICA.
+require("fastICA")
+set.seed(12345)
+X = as.matrix(spectra)
+
+ICA <- fastICA(X, n.comp = 2, fun = c("logcosh","exp"), alpha = 1.0, method = "R", row.norm = FALSE, maxit = 200, tol = 1e-04, verbose = FALSE, w.init = NULL)
+W_prime = ICA$K%*%ICA$W
+W1 = W_prime[,1]
+W2 = W_prime[,2]
+DF = data.frame(W1,W2)
+p3 <- ggplot(data=DF, aes(x=seq_along(W1)+750,y=W1))+geom_point(col = "black")+labs(x="NIR spectra", y="Loadings of W'1")
+p4 <- ggplot(data=DF, aes(x=seq_along(W2)+750,y=W2))+geom_point(col = "red", shape = "triangle")+labs(x="NIR spectra", y="Loadings of W'2")
+grid.arrange(p3,p4, ncol = 2)
+```
+The loadings carry some resemblance to the PC1 and PC2 components, but are actually not just inverses of the same if one looks closer. $W^{'}_{1}$ is totally unique and depends on mostly the lower end channels. $W^{'}_{2}$ is obviously an inverse of PC2 in the sense that it represents the negative mirror of every loading on PC2, however the amplitude of the loadings are also much higher than they were on PC2. The matrix W' thus represents another feature space produced from the input space than the PC algorithm generated, closely reminiscent but not quite the same. From theory we now this feature space is constructed to be as non-Gaussian as possible and to be rotation *variant*.
+
+### b)
+
+The data plotted in the space of $W^{'}_{1}$ and $W^{'}_{2}$ is shown below:
+
+```{r, results = 'hide', echo = F}
+# Score plots in W´ space
+IC1 = ICA$S[,1]
+IC2 = ICA$S[,2]
+ICsubset = data.frame(IC1, IC2) # Data projected along IC components
+ggplot(data= ICsubset, aes(x = IC1, y = IC2)) + geom_point(col = "blue")+ labs(x="W'1", y ="W'2")
+```
+We see clearly now that the data is plotted 'backwards and upside down' compared to the PC1-PC2 space. Conclusively both PCA and ICA extract the same features but by theory we know ICA identify the latent features uniquely, and apparently this manifests itself as a slightly different linear combination that explains the data a bit different but achieves the same amount of variance with its first two components.

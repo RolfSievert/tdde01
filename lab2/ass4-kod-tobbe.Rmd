@@ -1,0 +1,65 @@
+
+## Assignment 4, computer code
+```{r, eval = F, echo = T}
+### LAB 2 ###
+
+#-----------# 4: Principal components #-----------#
+
+# Requirements
+require("gridExtra") # (for plotting)
+require("fastICA")
+require("MASS")
+
+# Import data
+OrigSpectra <- read.csv2("NIRSpectra.csv")
+spectra <- OrigSpectra 
+spectra$Viscosity = c() # Remove target 
+# Perform PCA
+PCA=prcomp(spectra)
+lambda=PCA$sdev^2
+pr_var <- lambda/sum(lambda)*100
+x = 1:7
+var = pr_var[x]
+DF <- data.frame(x, var) # Convert to data frame
+ggplot(data=NULL) 
++ geom_col(data = DF, aes(x=x, y=var, fill="red", colour = "red"))
++ labs(title="Proportional variance vs. PCs" ,x="PC", y="Proportional variance") 
++ theme(legend.position="none")
+sum((lambda/sum(lambda)*100)[1:2]) # -> 99.64 % of variation in PC1 and PC2
+
+# Plot in coordinates of PC1 and PC2
+PC1 = PCA$x[,1]
+PC2 = PCA$x[,2]
+PCsubset = data.frame(PC1, PC2) # Data projected along PC components
+ggplot(data= PCsubset, aes(x = PC1, y = PC2)) + geom_point()
+
+# Trace plots
+L1 = PCA$rotation[,1]
+L2 = PCA$rotation[,2]
+L <- data.frame(L1, L2)
+ggplot(data=L, aes(x=seq_along(L1),y=L1))+geom_point()
+ggplot(data=L, aes(x=seq_along(L2),y=L2))+geom_point()
+
+# Fast ICA.
+set.seed(12345)
+X = as.matrix(spectra)
+
+ICA <- fastICA(X, n.comp = 2, fun = c("logcosh","exp"), alpha = 1.0, 
+               method = "R", row.norm = FALSE, maxit = 200, tol = 1e-04, 
+               verbose = FALSE, w.init = NULL)
+W_prime = ICA$K%*%ICA$W # W' = KW
+W1 = W_prime[,1]
+W2 = W_prime[,2]
+DF = data.frame(W1,W2)
+ggplot(data=DF, aes(x=seq_along(W1),y=W1))+geom_point() 
+ggplot(data=DF, aes(x=seq_along(W2),y=W2))+geom_point()
+
+# Score plots in W´ space
+IC1 = ICA$S[,1]
+IC2 = ICA$S[,2]
+ICsubset = data.frame(IC1, IC2) # Data projected along IC components
+ggplot(data= ICsubset, aes(x = IC1, y = IC2)) + geom_point()
+
+```
+
+

@@ -1,3 +1,8 @@
+# Assignment 1
+
+## Step 1 & 2
+
+```{r echo = FALSE}
 # Add libraries
 library("gridExtra")
 library("ggplot2")
@@ -9,11 +14,11 @@ setwd("~/courses/tdde01/lab2")
 # Read data
 crabs = read.csv("australian-crabs.csv")
 
-crabs.plot = ggplot(data = crabs, 
-                    mapping = aes(x=CL, 
-                                  y=RW, 
-                                  color=sex)) + 
-geom_point() + 
+crabs.plot = ggplot(data = crabs,
+                    mapping = aes(x=CL,
+                                  y=RW,
+                                  color=sex)) +
+geom_point() +
 ggtitle("Actual sex") +
 scale_x_continuous(name = "Carapace length") +
 scale_y_continuous(name = "Rear width") +
@@ -21,12 +26,12 @@ scale_color_discrete(name = "Sex")
 
 lda.model = lda(formula = sex~CL+RW, data = crabs)
 lda.predict = predict(lda.model, crabs)
-crabs.predict = ggplot(data = crabs, 
-                       mapping = aes(x=CL, 
-                                     y=RW, 
-                                     color=lda.predict$class)) + 
-geom_point() + 
-ggtitle("Predicted sex") + 
+crabs.predict = ggplot(data = crabs,
+                       mapping = aes(x=CL,
+                                     y=RW,
+                                     color=lda.predict$class)) +
+geom_point() +
+ggtitle("Predicted sex") +
 scale_x_continuous(name = "Carapace length") +
 scale_y_continuous(name = "Rear width") +
 scale_color_discrete(name = "Sex")
@@ -36,8 +41,21 @@ grid.arrange(crabs.plot, crabs.predict)
 # Calculate misclassification
 crabs.misclass = mean(crabs$sex != lda.predict$class)
 cat("Misclassification rate for lda: ", crabs.misclass)
+```
 
-# Step 3
+Since the sexes seems to follow two separate lines, they are separatable.
+Therefore it's appropriate to classify this data with a linear discriminant analysis.
+The only problem is where these two lines intersect and the sexes are impossible to differ.
+Some data may also be crossing this line and get a false classification.
+
+The misclassification rate is really good, which strengthens the argument that the classification method is appropriate.
+
+## Step 3
+
+This time, the same prediction is made, but with the priors $p(Male) = 0.9$ and $p(Female) = 0.1$.
+See plot below.
+
+```{r echo = FALSE}
 prior.male = 0.9
 prior.female = 0.1
 crabs.predict.prior = predict(lda.model, 
@@ -62,13 +80,21 @@ grid.arrange(crabs.plot.prior)
 crabs.prior.misclass = mean(crabs$sex != crabs.predict.prior$class)
 cat("Misclassification rate for lda with p(Male=0.9), p(Female)=0.1: ",
     crabs.prior.misclass)
+```
 
-# Step 4
-glm.model = glm(formula = sex~RW+CL, 
-                data = crabs, 
+This time, the misclassification is greater. 
+That is because the priors are not according to the actual distribution of sexes.
+
+## Step 4
+
+Here the equation of the decision boundary is plotted together with classification using GLM.
+
+```{r echo = FALSE}
+glm.model = glm(formula = sex~RW+CL,
+                data = crabs,
                 family = 'binomial')
-glm.predict = predict(object = glm.model, 
-                      newdata = crabs, 
+glm.predict = predict(object = glm.model,
+                      newdata = crabs,
                       type = 'response')
 glm.predicted.sex = ifelse(glm.predict > 0.5, "Male", "Female")
 
@@ -80,12 +106,12 @@ border = 0.5
 k = -rw/cl
 m = -(intercept - border)/cl
 # Print plot and line
-glm.plot = ggplot(data = crabs, 
-                  mapping = aes(x=RW, 
-                                y=CL, 
-                                color=glm.predicted.sex, 
-                                shape=crabs$sex)) + 
-geom_point() + 
+glm.plot = ggplot(data = crabs,
+                  mapping = aes(x=RW,
+                                y=CL,
+                                color=glm.predicted.sex,
+                                shape=crabs$sex)) +
+geom_point() +
 ggtitle("Actual and predicted sex (GLM), and decision boundary") +
 scale_x_continuous(name = "Carapace length") +
 scale_y_continuous(name = "Rear width") +
@@ -98,3 +124,6 @@ grid.arrange(glm.plot)
 glm.misclass = mean(crabs$sex != glm.predicted.sex)
 cat("Misclassification rate for GLM: ",
     glm.misclass)
+```
+
+The misclassification rate is the same as in step 2.

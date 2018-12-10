@@ -1,0 +1,61 @@
+---
+title: "lab1"
+author: "Erik Tedhamre"
+date: "8 December 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assignment 1.1
+```{r 1.1}
+library("ggplot2")
+library("MASS")
+data <- data.frame(read.csv("australian-crabs.csv"))
+ggplot(data = data, mapping = aes(CL, RW, color = sex)) + geom_point()
+```
+A plot of carapace length versus rear width where the observations are colored by sex. Looking at the graph the data seems reasonably easy to classify by linear discriminant analysis. Because there seems to be a line between the two sexes. There's also a linear relationship betweem the two variables.
+
+## Assignment 1.2
+```{r 1.2}
+lda.model1 <- lda(sex ~ CL + RW, data = data)
+lda.predict1 <- predict(lda.model1, data)
+ggplot.0.5 <- ggplot(data = data, mapping = aes(CL, RW, color = lda.predict1$class, shape = sex )) + geom_point()
+ggplot.0.5
+mcr.0.5 <- mean(lda.predict1$class != data$sex)
+```
+
+The missclassification rate for the linear discriminant analysis is **0.035**. This is pretty reasonable considering we saw on the original graph that there was one area with a bit of an overlap. If this is good enough for actual use is hard to say, it mostly depends on how much we would lose on an incorrect classification.
+
+## Assignment 1.3
+```{r 1.3.1}
+lda.model2 <- lda(sex ~ CL + RW, data = data, prior = c(0.1, 0.9))
+lda.predict2 <- predict(lda.model2, data)
+ggplot(data = data, mapping = aes(CL, RW, color = lda.predict2$class, shape = sex )) + geom_point()
+```
+
+The number of males increased since we are assuming a wheighted distribution. Especially the areas containing both types of observations are now classified as only males instead of both.
+
+```{r 1.3.2}
+mcr.0.9 <- mean(lda.predict2$class != data$sex)
+```
+
+The missclassification rate for the weighted linear discriminant analysis is **0.08**.
+
+## Assignment 1.4
+```{r 1.4.1}
+glm.model <- glm(as.factor(sex) ~ CL + RW, family = binomial, data = data)
+glm.predict <- predict(glm.model, data, type = 'response')
+mcr.glm <- mean(glm.predict != data$sex)
+```
+The missclassification rate is **0.035** which is the same as the original linear discriminant analysis.
+
+```{r 1.4.2}
+glm.predict.0.5 <- ifelse(glm.predict > 0.5, "Male", "Female")
+glm.slope <- coef(glm.model)[2]/(-coef(glm.model)[3])
+glm.intercept <- coef(glm.model)[1]/(-coef(glm.model)[3])
+ggplot.0.5 + geom_abline(slope = glm.slope, intercept = glm.intercept)
+```
+The decision line is drawn in the graph. It's described by **RW = 0.6CL + 1.08379**.

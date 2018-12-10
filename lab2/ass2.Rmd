@@ -1,4 +1,10 @@
-# Step 1
+# Assignment 2
+
+## Step 1
+
+Firstly, the data was separated into training, validation and test data.
+
+```{r echo = FALSE}
 # Add libraries
 library("gridExtra")
 library("ggplot2")
@@ -25,8 +31,11 @@ id2=sample(id1, floor(n*0.25))
 val=scores[id2,]
 id3=setdiff(id1,id2)
 test=scores[id3,]
+```
 
-# Step 2
+## Step 2
+
+```{r echo = FALSE}
 # Create tree
 tree.deviance = tree(formula = good_bad~., 
                      data = train, 
@@ -54,14 +63,19 @@ gini.train.misclass = misclass(predict.gini.train, train$good_bad)
 # Print misclassification rates
 cat("Misclassification on deviance with test: ", 
     deviance.test.misclass)
-cat("\nMisclassification on deviance with train: ", 
+cat("Misclassification on deviance with train: ", 
     deviance.train.misclass)
-cat("\nMisclassification on gini with test: ", 
+cat("Misclassification on gini with test: ", 
     gini.test.misclass)
-cat("\nMisclassification on gini with train: ", 
+cat("Misclassification on gini with train: ", 
     gini.train.misclass, "\n") 
+```
 
-# Step 3
+Here, misclassification rate is lower when using deviance as measure of impurity.
+
+## Step 3
+
+```{r echo = FALSE}
 # Lists of scores
 range = 15
 pruned=rep(0, range)
@@ -87,25 +101,27 @@ optLeaves = 4
 
 # Info on optimal tree
 optTree = prune.tree(tree.deviance, best=optLeaves)
-summary(optTree)
-optTree.predict = predict(optTree, newdata=test)
-optTree.predict.string = ifelse(optTree.predict[2] > 0.5, "good", "bad")
-optTree.misclass = misclass(optTree.predict.string, test$good_bad)
-cat("\nMisclassification on optimal tree: ", 
+#summary(optTree)
+optTree.predict = predict(optTree, newdata=test, type="class")
+optTree.misclass = misclass(optTree.predict, test$good_bad)
+cat("Misclassification on optimal tree: ", 
     optTree.misclass)
 
-cat("\nTree depth is 5 as can be seen in the plot. \n")
+cat("Tree depth is 3 as can be seen in the plot. \n")
 plot(optTree)
-cat("\n\nUsed variables in optimal tree: \n'savings' 'duration' 'history' 'age' 'purpose'\n\n")
+cat("Used variables in optimal tree: \n'savings' 'duration' 'history' \n\n")
+```
 
-# Step 4
+## Step 4
+
+```{r echo = FALSE}
 # Create model and classify
 model.bayes = naiveBayes(formula = good_bad~., data=train)
 predict.bayes.test = predict(model.bayes, newdata=test, type="class")
 predict.bayes.train = predict(model.bayes, newdata=train, type="class")
 
 # Print info on classification with prediction on test
-table.bayes = table(predict.bayes.test, test$good_bad)
+table.bayes = table(Predicted=predict.bayes.test, Actual=test$good_bad)
 cat("Confusion table of naïve bayes:")
 print(table.bayes)
 
@@ -113,14 +129,19 @@ misclass.bayes = mean(predict.bayes.test != test$good_bad)
 cat("Misclassification with naïve bayes: ", misclass.bayes, "\n\n")
 
 # Print info on classification with prediction on test
-table.bayes = table(predict.bayes.train, train$good_bad)
+table.bayes = table(Predicted=predict.bayes.train, Actual=train$good_bad)
 cat("Confusion table of naïve bayes:")
 print(table.bayes)
 
 misclass.bayes = mean(predict.bayes.train != train$good_bad)
 cat("Misclassification with naïve bayes: ", misclass.bayes, "\n\n")
+```
 
-# Step 5
+Naïve Bayes has much better result than in step 3.
+
+## Step 5
+
+```{r echo = FALSE}
 # Calculate TPR and FPR of optimal tree and bayes
 getROC = function(pred, pi) {
     tpr = c()
@@ -161,8 +182,16 @@ roc.plot = ggplot(mapping=aes(col=Classifier)) +
     geom_line(data=bayes.roc, aes(x=fpr, y=tpr, col="Bayes"))
 
 grid.arrange(roc.plot)
+```
 
-# Step 6
+Naïve Bayes has better ratio between TPR and FPR.
+The only exception is around $\pi = 0.75$, as can be seen in the graph.
+
+## Step 6
+
+Using loss matrix with naïve bayes.
+
+```{r echo = FALSE}
 # Create model and classify
 model.bayes = naiveBayes(formula = good_bad~., data=train)
 predict.bayes.test = predict(model.bayes, newdata=test, type="raw")
@@ -174,7 +203,7 @@ predict.bayes.test.loss = ifelse(predict.bayes.test[, 'good'] /
                                  predict.bayes.test[, 'bad'] > loss, 
                                  'good', 
                                  'bad')
-table.bayes = table(Predict=predict.bayes.test.loss, Actual=test$good_bad)
+table.bayes = table(Predicted=predict.bayes.test.loss, Actual=test$good_bad)
 cat("Confusion table of naïve bayes (using test data):")
 print(table.bayes)
 
@@ -186,9 +215,13 @@ predict.bayes.train.loss = ifelse(predict.bayes.train[, 'good'] /
                                   predict.bayes.train[, 'bad'] > loss, 
                                  'good', 
                                  'bad')
-table.bayes = table(Predict=predict.bayes.train.loss, Actual=train$good_bad)
+table.bayes = table(Predicted=predict.bayes.train.loss, Actual=train$good_bad)
 cat("Confusion table of naïve bayes (using train data): ")
 print(table.bayes)
 
 misclass.bayes = mean(predict.bayes.train.loss != train$good_bad)
 cat("Misclassification with naïve bayes (using train data): ", misclass.bayes, "\n")
+```
+
+The misclassification is much greater. 
+But the confusion matrix is more favorable from an economic point of view for a company since less are predicted good that are actually bad.

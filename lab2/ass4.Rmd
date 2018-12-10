@@ -1,4 +1,8 @@
-# Step 1
+# Assignment 4
+
+## Step 1
+
+```{r echo = FALSE}
 # Add libraries
 library("gridExtra")
 library("ggplot2")
@@ -33,12 +37,24 @@ PC2 = pca$x[,2]
 plot.projection = ggplot() +
     geom_point(data=spectra, mapping=aes(x=PC1, y=PC2))
 grid.arrange(plot.projection)
+```
 
-# Step 2
+Some diesel fuels depend a lot on PC1, compared to other fuels, I would say that these are unusual.
+
+## Step 2
+
+```{r echo = FALSE}
 plot(pca$rotation[,1], main="Traceplot, PC1")
 plot(pca$rotation[,2], main="Traceplot, PC2")
+```
 
-# Step 3a
+QUESTION??
+
+## Step 3
+
+### a
+
+```{r echo = FALSE}
 set.seed(12345)
 res = fastICA(X=spectra, 
         n.comp=2, 
@@ -55,8 +71,13 @@ W.prime = res$K %*% res$W
 # Traceplots of fastICA
 plot(W.prime[,1], main="Traceplot, PC1")
 plot(W.prime[,2], main="Traceplot, PC2")
+```
 
-# Step 3b
+What kind of measure with W prime?
+
+### b
+
+```{r echo = FALSE}
 # Extract ICs
 IC1 = res$S[,1]
 IC2 = res$S[,2]
@@ -65,3 +86,6 @@ IC2 = res$S[,2]
 plot.projection = ggplot() +
     geom_point(data=spectra, mapping=aes(x=IC1, y=IC2))
 grid.arrange(plot.projection)
+```
+
+This plot is very similar to the one in step 1, but it is flipped and scaled.

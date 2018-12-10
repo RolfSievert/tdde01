@@ -1,0 +1,42 @@
+---
+title: Lab 2
+authors: Rolf Sievert (rolsi701), Erik Tedhamre (erite601), Tobias Fjellström (tobfj630)
+date: 2018-12-10
+output:
+  pdf_document:
+    toc: yes
+---
+
+List of assignment contributions:
+
+* Assignment 1: Erik Tedhamre
+* Assignment 2: Rolf Sievert
+* Assignment 3: Tobias Fjellström
+
+# Assignment 1
+
+```{r child = "ass1-teddy.Rmd"}
+```
+
+```{r child = "ass2.Rmd"}
+```
+
+```{r child = "ass4-tobbe.Rmd"}
+```
+
+# Appendix
+
+## Assignment 1
+
+```{r engine='bash', comment=''}
+cat ass1-kod-teddy.R
+```
+
+## Assignment 2
+
+```{r engine='bash', comment=''}
+cat ass2.R
+```
+
+```{r child = "ass4-kod-tobbe.Rmd"}
+```
