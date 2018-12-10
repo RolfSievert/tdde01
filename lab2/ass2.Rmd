@@ -122,19 +122,19 @@ predict.bayes.train = predict(model.bayes, newdata=train, type="class")
 
 # Print info on classification with prediction on test
 table.bayes = table(Predicted=predict.bayes.test, Actual=test$good_bad)
-cat("Confusion table of naïve bayes:")
+cat("Confusion table of naïve bayes (test):")
 print(table.bayes)
 
 misclass.bayes = mean(predict.bayes.test != test$good_bad)
-cat("Misclassification with naïve bayes: ", misclass.bayes, "\n\n")
+cat("Misclassification with naïve bayes (test): ", misclass.bayes, "\n\n")
 
 # Print info on classification with prediction on test
 table.bayes = table(Predicted=predict.bayes.train, Actual=train$good_bad)
-cat("Confusion table of naïve bayes:")
+cat("Confusion table of naïve bayes (train):")
 print(table.bayes)
 
 misclass.bayes = mean(predict.bayes.train != train$good_bad)
-cat("Misclassification with naïve bayes: ", misclass.bayes, "\n\n")
+cat("Misclassification with naïve bayes (train): ", misclass.bayes, "\n\n")
 ```
 
 Naïve Bayes has much better result than in step 3.

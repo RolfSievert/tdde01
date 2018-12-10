@@ -20,19 +20,19 @@ output:
 
 ## Assignment 1
 
-```{r engine="bash"}
+```{r engine="bash", comment='', echo=FALSE}
 cat ass1.R
 ```
 
 ## Assignment 2
 
-```{r engine="bash"}
+```{r engine="bash", comment='', echo=FALSE}
 cat ass2.R
 ```
 
 ## Assignment 4
 
-```{r engine="bash"}
+```{r engine="bash", comment='', echo=FALSE}
 cat ass4.R
 ```
 

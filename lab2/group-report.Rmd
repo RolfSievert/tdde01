@@ -1,6 +1,6 @@
 ---
 title: Lab 2
-authors: Rolf Sievert (rolsi701), Erik Tedhamre (erite601), Tobias Fjellström (tobfj630)
+author: Rolf Sievert (rolsi701), Erik Tedhamre (erite601), Tobias Fjellström (tobfj630)
 date: 2018-12-10
 output:
   pdf_document:
@@ -11,7 +11,7 @@ List of assignment contributions:
 
 * Assignment 1: Erik Tedhamre
 * Assignment 2: Rolf Sievert
-* Assignment 3: Tobias Fjellström
+* Assignment 4: Tobias Fjellström
 
 # Assignment 1
 
@@ -28,13 +28,13 @@ List of assignment contributions:
 
 ## Assignment 1
 
-```{r engine='bash', comment=''}
+```{r engine='bash', comment='', echo=FALSE}
 cat ass1-kod-teddy.R
 ```
 
 ## Assignment 2
 
-```{r engine='bash', comment=''}
+```{r engine='bash', comment='', echo=FALSE}
 cat ass2.R
 ```
 

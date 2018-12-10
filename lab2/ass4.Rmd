@@ -48,7 +48,7 @@ plot(pca$rotation[,1], main="Traceplot, PC1")
 plot(pca$rotation[,2], main="Traceplot, PC2")
 ```
 
-QUESTION??
+PC2 is explained by mainly a few original features. This can be seen in the graph since it's almost zero until Index is around 100-130.
 
 ## Step 3
 
@@ -73,7 +73,7 @@ plot(W.prime[,1], main="Traceplot, PC1")
 plot(W.prime[,2], main="Traceplot, PC2")
 ```
 
-What kind of measure with W prime?
+W' is an estimation of an un-mixing matrix.
 
 ### b
 
