@@ -1,0 +1,10 @@
+---
+title: Lab 3
+author: Rolf Sievert (rolsi701)
+date: 2018-12-xx
+toc: yes
+---
+
+
+
+# Appendix
