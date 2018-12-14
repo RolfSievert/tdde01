@@ -1,21 +1,22 @@
-
-set.seed(1234567890)
 library("geosphere")
 
 setwd("~/courses/tdde01/lab3/")
 
 stations_full = read.csv("stations.csv", fileEncoding = "Latin1")
 temps = read.csv("temps50k.csv")
-st = merge(stations, temps, by="station_number")
-stations = stations_full[,]
+#st = merge(stations, temps, by="station_number")
+n = nrow(stations_full)
+set.seed(1234567890)
+s = sample(1:n, floor(n*0.1))
+stations = stations_full[s,]
 
 gauss_kernel = function(u) {
     return (exp(-(abs(u)^2)))
 }
 
-h_distance = 200000
-h_date = 20
-h_time = 4
+h_distance = 400000
+h_date = 50
+h_time = 8
 
 # Station is station number, interest is vector(long, lat)
 kernel_distance = function(station, interest) {
@@ -31,7 +32,7 @@ kernel_date = function(day, interest) {
     day = as.Date(day)
     interest = as.Date(interest)
     distance = as.numeric(difftime(day, interest, units=c("days")))
-    res = gauss_kernel(distance/h_date)
+    res = gauss_kernel((distance %% 365)/h_date)
     return (res)
 }
 
@@ -42,9 +43,11 @@ kernel_time = function(hour, interest) {
     return (gauss_kernel(distance/h_time))
 }
 
-kernel_sum = function(long, lat, date, time) {
+kernel_sum = function(long, lat, date, time, prod=FALSE) {
     sum1 = 0 # Sum multiplied by temperature value
     sum2 = 0 # Just sum of weights
+    prod1 = 0 # Product multiplied by temperature value
+    prod2 = 0 # Just sum och product weights
     
     for (station in stations$station_number) {
         # Calculate station distance
@@ -61,17 +64,25 @@ kernel_sum = function(long, lat, date, time) {
                 # Get temperature
                 temp = station.data$air_temperature
                 weight = (dist + date.diff + time.diff)
+                weight_prod = dist*date.diff*time.diff
                 sum1 = sum1 + weight*temp
                 sum2 = sum2 + weight
-            }
+                prod1 = prod1 + weight_prod * temp
+                prod2 = prod2 + weight_prod
+            }    
         }
     }
-    return (sum1/sum2)
+    if (prod) {
+        return (prod1/prod2)
+    } 
+    else {
+        return (sum1/sum2)
+    }
 }
 
 a = 58.4274 # The point to predict
 b = 14.826
-date = "2013-11-04"
+date = "2000-01-04"
 #date = "2013-11-04" # The date to predict
 times = c("04:00:00", "06:00:00", "08:00:00", "10:00:00", "12:00:00", 
           "14:00:00", "16:00:00", "18:00:00", "20:00:00", "22:00:00", 
@@ -82,7 +93,7 @@ temp = vector(length=length(times))
 # Fill in code
 for (i in 1:length(times)) {
     time = times[i]
-    temp[i] = kernel_sum(a, b, date, time)
+    temp[i] = kernel_sum(a, b, date, time, TRUE)
 }
 
 plot(temp, x=seq(4, 24, 2), type="o")
