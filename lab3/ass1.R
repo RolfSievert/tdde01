@@ -16,7 +16,7 @@ gauss_kernel = function(u) {
 
 h_distance = 400000
 h_date = 50
-h_time = 8
+h_time = 6
 
 # Station is station number, interest is vector(long, lat)
 kernel_distance = function(station, interest) {
@@ -37,9 +37,9 @@ kernel_date = function(day, interest) {
 }
 
 kernel_time = function(hour, interest) {
-    h1 = strptime(hour, format = "%H:%M:%S")
-    h2 = strptime(interest, format = "%H:%M:%S")
-    distance = as.numeric(abs(h2-h1))
+    h1 = as.numeric(substr(hour, 1, 2))
+    h2 = as.numeric(substr(interest, 1, 2))
+    distance = abs(((h2-h1) + 12) %% 24 - 12)
     return (gauss_kernel(distance/h_time))
 }
 
@@ -82,11 +82,11 @@ kernel_sum = function(long, lat, date, time, prod=FALSE) {
 
 a = 58.4274 # The point to predict
 b = 14.826
-date = "2000-01-04"
+date = "2000-07-04"
 #date = "2013-11-04" # The date to predict
 times = c("04:00:00", "06:00:00", "08:00:00", "10:00:00", "12:00:00", 
           "14:00:00", "16:00:00", "18:00:00", "20:00:00", "22:00:00", 
-          "24:00:00")
+          "00:00:00")
 
 temp = vector(length=length(times))
 
