@@ -9,28 +9,20 @@ tr = trva[1:25,] # Training
 va = trva[26:50,] # Validation
 
 # Random initialization of the weights in the interval [-1, 1]
-# One hidden layer with 10 units
-winit = sample(x = seq(-1, 1, 0.1), size = 10)
+winit = runif(31, -1, 1)
 validations = c()
-for (i in 1:100) {
-    nn = neuralnet(formula = Sin ~ Var, data = tr, hidden = TRUE, startweights = winit, threshold = i/1000)
+for (i in 1:10) {
+    nn = neuralnet(formula = Sin ~ Var, data = tr, hidden = 10, startweights = winit, threshold = i/1000)
     comp = compute(nn, va$Var)
-    # Calculate average percentage devaince of actual value
-    sum = 0
-    for (i in 1:length(comp$net.result)) {
-        diff = abs(va$Sin[i] - comp$net.result[i])
-        perc = diff / 2 # +1 to get span from -1 to 1
-        sum = sum + perc
-    }
-    sum = sum/length(comp$net.result)
-    validations = c(validations, sum)
+    
+    mse = sum((comp$net.result - va$Sin)^2) / nrow(va)
+    validations = c(validations, mse)
 }
 plot(validations)
-print(min(validations))
-best_threshold = 7/1000
+best_threshold = which.min(validations)/1000
 
 # Optimal nn
-nn = neuralnet(formula = Sin ~ Var, data = trva, startweights = winit, threshold = best_threshold)
+nn = neuralnet(formula = Sin ~ Var, data = trva, hidden = 10, startweights = winit, threshold = best_threshold)
 plot(nn)
 
 # Plot of the predictions (black dots) and the data (red dots)
