@@ -1,4 +1,12 @@
 
+# Assignment 3
+
+## Validation
+
+The threshold was chosen to the one that ended up resulting in the lowest mean square error.
+The MSE for thresholds in the interval [1/1000, 10/1000] are plotted below.
+
+```{r, echo=FALSE}
 library("neuralnet")
 set.seed(1234567890)
 
@@ -20,12 +28,26 @@ for (i in 1:10) {
 }
 plot(validations)
 best_threshold = which.min(validations)/1000
+```
 
+As seen here, the best threshold in this case is 4/1000.
+
+## The final neural network
+
+Test?
+
+```{r, echo=FALSE}
 # Optimal nn
 nn = neuralnet(formula = Sin ~ Var, data = trva, hidden = 10, startweights = winit, threshold = best_threshold)
 
 plot(nn, ylab="Neural network")
+```
 
+## Prediction of Sin
+Black dots are prediction, red ones are correct values.
+
+```{r, echo=FALSE}
 # Plot of the predictions (black dots) and the data (red dots)
 plot(prediction(nn)$rep1, ylim = c(-1, 1))
 points(trva, col = "red")
+```

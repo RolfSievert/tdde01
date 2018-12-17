@@ -1,6 +1,43 @@
-library("geosphere")
 
-setwd("~/courses/tdde01/lab3/")
+# Assignment 1
+
+## Part 1
+
+The chosen width for each kernel's is:
+
+* h_distance: 10000 m
+* h_date: 8 days
+* h_time: 4 hours
+
+The plots below show that the kernels gives more weight to closer points.
+
+```{r, echo=FALSE}
+h_distance = 10000
+h_date = 8
+h_time = 4
+
+gauss_kernel = function(u) {
+    return (exp(-(u^2)))
+}
+
+# Plot kernels
+range = -h_distance:h_distance
+plot(x=range, y=gauss_kernel(range/h_distance), type="l", ylab = "Distance kernel")
+
+range = -h_date:h_date
+plot(x=range, y=gauss_kernel(range/h_date), type="l", ylab = "Date kernel")
+
+range = -h_time:h_time
+plot(x=range, y=gauss_kernel(range/h_time), type="l", ylab = "Time kernel")
+```
+
+## Part 2
+
+The plots below show a temperature prediction on Christmas Eve. 
+The first one summarizing each kernel, the other multiplying them. 
+
+```{r, echo=FALSE}
+library("geosphere")
 
 stations = read.csv("stations.csv", fileEncoding = "Latin1")
 temps = read.csv("temps50k.csv")
@@ -40,16 +77,6 @@ kernel_time = function(hour, interest) {
     return (gauss_kernel(distance/h_time))
 }
 
-# Plot kernels
-range = -h_distance:h_distance
-plot(x=range, y=gauss_kernel(range/h_distance), type="l", ylab = "Distance kernel")
-
-range = -h_date:h_date
-plot(x=range, y=gauss_kernel(range/h_date), type="l", ylab = "Date kernel")
-
-range = -h_time:h_time
-plot(x=range, y=gauss_kernel(range/h_time), type="l", ylab = "Time kernel")
-
 kernel_sum = function(long, lat, date, time, product=FALSE) {
     longlat = data.frame(st$longitude, st$latitude)
     distances = kernel_distance(longlat, c(long, lat))
@@ -88,3 +115,7 @@ plot(temp, x=seq(4, 24, 2), type="o", ylab="Sum of kernels", xlab="Hour")
 temp = lapply(times, function(t) kernel_sum(longitude, latitude, date, t, TRUE))
 
 plot(temp, x=seq(4, 24, 2), type="o", ylab="Product of kernels", xlab="Hour")
+```
+
+As can be seen, the product of kernels give preffered results (since it's Christmas).
+It's also more probable that it's minus degrees in end of December.

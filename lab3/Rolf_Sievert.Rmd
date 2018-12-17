@@ -1,10 +1,27 @@
 ---
-title: Lab 3
-author: Rolf Sievert (rolsi701)
-date: 2018-12-xx
+title: "Lab 3"
+author: "Rolf Sievert (rolsi701)"
+date: '2018-12-17'
+output: pdf_document
 toc: yes
 ---
 
+``` {r child="ass1.Rmd"}
+```
 
+``` {r child="ass3.Rmd"}
+```
 
 # Appendix
+
+## Assignment 1
+
+``` {r engine='bash', comment='', echo=FALSE}
+cat ass1.R
+```
+
+## Assignment 3
+
+``` {r engine='bash', comment='', echo=FALSE}
+cat ass3.R
+```
