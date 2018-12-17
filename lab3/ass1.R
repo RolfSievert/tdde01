@@ -5,18 +5,14 @@ setwd("~/courses/tdde01/lab3/")
 stations_full = read.csv("stations.csv", fileEncoding = "Latin1")
 temps = read.csv("temps50k.csv")
 st = merge(stations, temps, by="station_number")
-n = nrow(stations_full)
-set.seed(1234567890)
-s = sample(1:n, floor(n*1))
-stations = stations_full[s,]
 
 gauss_kernel = function(u) {
     return (exp(-(u^2)))
 }
 
-h_distance = 20000
-h_date = 50
-h_time = 6
+h_distance = 10000
+h_date = 8
+h_time = 4
 
 # Station is station number, interest is vector(long, lat)
 kernel_distance = function(station, interest) {
@@ -30,7 +26,10 @@ kernel_date = function(dates, interest) {
     dates = as.Date(dates)
     interest = as.Date(interest)
     distance = as.numeric(difftime(dates, interest, units=c("days")))
-    res = gauss_kernel((distance %% 365)/h_date)
+    leap_years = floor(floor(distance/365)/4)
+    distance = (distance - leap_years) %% 365
+    distance = sapply(distance, function(d) min(d, abs(365 - d)))
+    res = gauss_kernel((distance)/h_date)
     return (res)
 }
 
@@ -55,7 +54,6 @@ kernel_sum = function(long, lat, date, time, product=FALSE) {
     prod = sum((distances * datediffs * timediffs) * st$air_temperature)
     prod = prod / sum(distances * datediffs * timediffs)
     
-    print("END")
     if (product) {
         return(prod)
     }
@@ -64,21 +62,16 @@ kernel_sum = function(long, lat, date, time, product=FALSE) {
     }
 }
 
-
 latitude = 58.4274 # The point to predict
 longitude = 14.826
-date = "2000-01-04"
-#date = "2013-11-04" # The date to predict
+date = "1980-11-04" # The date to predict
+temperature = st[row, 'air_temperature']
 times = c("04:00:00", "06:00:00", "08:00:00", "10:00:00", "12:00:00", 
           "14:00:00", "16:00:00", "18:00:00", "20:00:00", "22:00:00", 
           "00:00:00")
+# Remove posterior dates
+st = st[as.Date(st$date) < as.Date(date),]
 
-temp = vector(length=length(times))
-
-# Fill in code
-for (i in 1:length(times)) {
-    time = times[i]
-    temp[i] = kernel_sum(longitude, latitude, date, time, TRUE)
-}
+temp = lapply(times, function(t) kernel_sum(longitude, latitude, date, t, TRUE))
 
 plot(temp, x=seq(4, 24, 2), type="o")
