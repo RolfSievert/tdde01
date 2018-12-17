@@ -4,14 +4,14 @@ setwd("~/courses/tdde01/lab3/")
 
 stations_full = read.csv("stations.csv", fileEncoding = "Latin1")
 temps = read.csv("temps50k.csv")
-#st = merge(stations, temps, by="station_number")
+st = merge(stations, temps, by="station_number")
 n = nrow(stations_full)
 set.seed(1234567890)
 s = sample(1:n, floor(n*0.1))
 stations = stations_full[s,]
 
 gauss_kernel = function(u) {
-    return (exp(-(abs(u)^2)))
+    return (exp(-(u^2)))
 }
 
 h_distance = 400000
