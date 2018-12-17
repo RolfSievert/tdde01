@@ -7,31 +7,29 @@ temps = read.csv("temps50k.csv")
 st = merge(stations, temps, by="station_number")
 n = nrow(stations_full)
 set.seed(1234567890)
-s = sample(1:n, floor(n*0.1))
+s = sample(1:n, floor(n*1))
 stations = stations_full[s,]
 
 gauss_kernel = function(u) {
     return (exp(-(u^2)))
 }
 
-h_distance = 400000
+h_distance = 20000
 h_date = 50
 h_time = 6
 
 # Station is station number, interest is vector(long, lat)
 kernel_distance = function(station, interest) {
-    longitude = stations[stations$station_number == station, 'longitude']
-    latitude = stations[stations$station_number == station, 'latitude']
-    distance = distHaversine(c(longitude, latitude), interest)
+    distance = distHaversine(station, interest)
     res = gauss_kernel(distance/h_distance)
     return (res)
 }
 
 # Calculates difference in days from day to interest
-kernel_date = function(day, interest) {
-    day = as.Date(day)
+kernel_date = function(dates, interest) {
+    dates = as.Date(dates)
     interest = as.Date(interest)
-    distance = as.numeric(difftime(day, interest, units=c("days")))
+    distance = as.numeric(difftime(dates, interest, units=c("days")))
     res = gauss_kernel((distance %% 365)/h_date)
     return (res)
 }
@@ -43,46 +41,33 @@ kernel_time = function(hour, interest) {
     return (gauss_kernel(distance/h_time))
 }
 
-kernel_sum = function(long, lat, date, time, prod=FALSE) {
-    sum1 = 0 # Sum multiplied by temperature value
-    sum2 = 0 # Just sum of weights
-    prod1 = 0 # Product multiplied by temperature value
-    prod2 = 0 # Just sum och product weights
+kernel_sum = function(long, lat, date, time, product=FALSE) {
+    longlat = data.frame(st$longitude, st$latitude)
+    distances = kernel_distance(longlat, c(long, lat))
     
-    for (station in stations$station_number) {
-        # Calculate station distance
-        rows = temps[temps$station_number == station,]
-        if (station %in% rows$station_number) {
-            dist = kernel_distance(station, c(long, lat))
-            for (row in 1:nrow(rows)) {
-                # Calculate date difference
-                station.data = rows[row,]
-                date.diff = kernel_date(station.data$date, date)
-                
-                # Calculate time difference
-                time.diff = kernel_time(station.data$time, time)
-                # Get temperature
-                temp = station.data$air_temperature
-                weight = (dist + date.diff + time.diff)
-                weight_prod = dist*date.diff*time.diff
-                sum1 = sum1 + weight*temp
-                sum2 = sum2 + weight
-                prod1 = prod1 + weight_prod * temp
-                prod2 = prod2 + weight_prod
-            }    
-        }
+    datediffs = kernel_date(st$date, date)
+    
+    timediffs = kernel_time(st$time, time)
+
+    sum = sum((distances + datediffs + timediffs) * st$air_temperature)
+    sum = sum / sum(distances + datediffs + timediffs)
+    
+    prod = sum((distances * datediffs * timediffs) * st$air_temperature)
+    prod = prod / sum(distances * datediffs * timediffs)
+    
+    print("END")
+    if (product) {
+        return(prod)
     }
-    if (prod) {
-        return (prod1/prod2)
-    } 
     else {
-        return (sum1/sum2)
+        return(sum)
     }
 }
 
-a = 58.4274 # The point to predict
-b = 14.826
-date = "2000-07-04"
+
+latitude = 58.4274 # The point to predict
+longitude = 14.826
+date = "2000-01-04"
 #date = "2013-11-04" # The date to predict
 times = c("04:00:00", "06:00:00", "08:00:00", "10:00:00", "12:00:00", 
           "14:00:00", "16:00:00", "18:00:00", "20:00:00", "22:00:00", 
@@ -93,7 +78,7 @@ temp = vector(length=length(times))
 # Fill in code
 for (i in 1:length(times)) {
     time = times[i]
-    temp[i] = kernel_sum(a, b, date, time, TRUE)
+    temp[i] = kernel_sum(longitude, latitude, date, time, TRUE)
 }
 
 plot(temp, x=seq(4, 24, 2), type="o")
