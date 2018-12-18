@@ -3,7 +3,7 @@
 
 ## Validation
 
-The threshold was chosen to the one that ended up resulting in the lowest mean square error.
+The threshold was chosen to the one that ended up resulting in the lowest mean square error when predicting the validation data.
 The MSE for thresholds in the interval [1/1000, 10/1000] are plotted below.
 
 ```{r, echo=FALSE}
@@ -26,7 +26,7 @@ for (i in 1:10) {
     mse = sum((comp$net.result - va$Sin)^2) / nrow(va)
     validations = c(validations, mse)
 }
-plot(validations)
+plot(x=seq(1/1000, 10/1000, 1/1000), y=validations, xlab="Thresholds", ylab="Validation data")
 best_threshold = which.min(validations)/1000
 ```
 
@@ -34,13 +34,11 @@ As seen here, the best threshold in this case is 4/1000.
 
 ## The final neural network
 
-Test?
-
 ```{r, echo=FALSE}
 # Optimal nn
 nn = neuralnet(formula = Sin ~ Var, data = trva, hidden = 10, startweights = winit, threshold = best_threshold)
 
-plot(nn, ylab="Neural network")
+plot(nn, ylab="Neural network", rep="best")
 ```
 
 ## Prediction of Sin

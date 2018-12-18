@@ -41,14 +41,15 @@ kernel_time = function(hour, interest) {
 }
 
 # Plot kernels
-range = -h_distance:h_distance
-plot(x=range, y=gauss_kernel(range/h_distance), type="l", ylab = "Distance kernel")
+width = 2.5
+range = -(h_distance*width):(h_distance*width)
+plot(x=range, y=gauss_kernel(range/h_distance), type="l", ylab = "Distance kernel", xlab="Range")
 
-range = -h_date:h_date
-plot(x=range, y=gauss_kernel(range/h_date), type="l", ylab = "Date kernel")
+range = -(h_date*width):(h_date*width)
+plot(x=range, y=gauss_kernel(range/h_date), type="l", ylab = "Date kernel", xlab="Range")
 
-range = -h_time:h_time
-plot(x=range, y=gauss_kernel(range/h_time), type="l", ylab = "Time kernel")
+range = -(h_time*width):(h_time*width)
+plot(x=range, y=gauss_kernel(range/h_time), type="l", ylab = "Time kernel", xlab="Range")
 
 kernel_sum = function(long, lat, date, time, product=FALSE) {
     longlat = data.frame(st$longitude, st$latitude)

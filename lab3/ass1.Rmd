@@ -3,7 +3,7 @@
 
 ## Part 1
 
-The chosen width for each kernel's is:
+The chosen width for each kernel is:
 
 * h_distance: 10000 m
 * h_date: 8 days
@@ -21,15 +21,29 @@ gauss_kernel = function(u) {
 }
 
 # Plot kernels
-range = -h_distance:h_distance
-plot(x=range, y=gauss_kernel(range/h_distance), type="l", ylab = "Distance kernel")
+width = 2.5
+range = -(h_distance*width):(h_distance*width)
+plot(x=range, y=gauss_kernel(range/h_distance), type="l", ylab = "Distance kernel", xlab="Range")
 
-range = -h_date:h_date
-plot(x=range, y=gauss_kernel(range/h_date), type="l", ylab = "Date kernel")
+range = -(h_date*width):(h_date*width)
+plot(x=range, y=gauss_kernel(range/h_date), type="l", ylab = "Date kernel", xlab="Range")
 
-range = -h_time:h_time
-plot(x=range, y=gauss_kernel(range/h_time), type="l", ylab = "Time kernel")
+range = -(h_time*width):(h_time*width)
+plot(x=range, y=gauss_kernel(range/h_time), type="l", ylab = "Time kernel", xlab="Range")
 ```
+
+The values of widths were tested by changing them and evaluating predictions of temperature so that a plot of one day's temperature would look realistic.
+Each width defines where the amplification is $e^{-1}$, which gives some indication on where points starts to being cut away.
+The widths can be explained as:
+
+* Measurements within a distance of 10000 m are weighted greatest.
+* The closest 8 days affect the temperature the most.
+* A measurement within 4 h contributes to the prediction the most.
+
+Of course, all of these kernels give the greatest amplification at zero distance.
+Since this model for predicting temperature is far from perfect, it's hard to tell what widths that are realistic. 
+For instance, the model does not take into account what year a measurment was made, only the day of a year.
+With that in mind, the chosen widths can be assumed somewhat adequate for this case.
 
 ## Part 2
 
@@ -117,5 +131,10 @@ temp = lapply(times, function(t) kernel_sum(longitude, latitude, date, t, TRUE))
 plot(temp, x=seq(4, 24, 2), type="o", ylab="Product of kernels", xlab="Hour")
 ```
 
-As can be seen, the product of kernels give preffered results (since it's Christmas).
-It's also more probable that it's minus degrees in end of December.
+As can be seen, the product of the kernels give preffered results (since it's Christmas and I want snow).
+It is also more probable that it is minus degrees at the end of December.
+
+A summation would not give a good result since then only one kernel need to have a good result to be counted in.
+Lets say a day is half a year away from target day, but at the exact same hour.
+That day should almost not count at all, but it still does with with the summation method.
+That way, the product gives a better result.
