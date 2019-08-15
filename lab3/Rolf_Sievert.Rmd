@@ -16,12 +16,10 @@ toc: yes
 
 ## Assignment 1
 
-``` {r engine='bash', comment='', echo=FALSE}
-cat ass1.R
+``` {r code=readLines("lab3/ass1.R"), eval=FALSE}
 ```
 
 ## Assignment 3
 
-``` {r engine='bash', comment='', echo=FALSE}
-cat ass3.R
+``` {r code=readLines("lab3/ass3.R"), eval=FALSE}
 ```

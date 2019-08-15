@@ -20,19 +20,15 @@ output:
 
 ## Assignment 1
 
-```{r engine="bash", comment='', echo=FALSE}
-cat ass1.R
+```{r, code = readLines("lab2/ass1.R"), eval=FALSE}
 ```
 
 ## Assignment 2
 
-```{r engine="bash", comment='', echo=FALSE}
-cat ass2.R
+```{r, code = readLines("lab2/ass2.R"), eval=FALSE}
 ```
 
 ## Assignment 4
 
-```{r engine="bash", comment='', echo=FALSE}
-cat ass4.R
+```{r, code = readLines("lab2/ass4.R"), eval=FALSE}
 ```
-

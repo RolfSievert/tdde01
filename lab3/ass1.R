@@ -21,7 +21,7 @@ kernel_distance = function(station, interest) {
     return (res)
 }
 
-# Calculates difference in days from day to interest
+# Calculates gaussian kernel provided with difference in days from day to interest
 kernel_date = function(dates, interest) {
     dates = as.Date(dates)
     interest = as.Date(interest)
@@ -33,6 +33,7 @@ kernel_date = function(dates, interest) {
     return (res)
 }
 
+# Calculates gaussian kernel provided with difference of hour and target hour
 kernel_time = function(hour, interest) {
     h1 = as.numeric(substr(hour, 1, 2))
     h2 = as.numeric(substr(interest, 1, 2))
@@ -51,6 +52,7 @@ plot(x=range, y=gauss_kernel(range/h_date), type="l", ylab = "Date kernel", xlab
 range = -(h_time*width):(h_time*width)
 plot(x=range, y=gauss_kernel(range/h_time), type="l", ylab = "Time kernel", xlab="Range")
 
+# Summation of kernels. Passing product returns kernels multiplied
 kernel_sum = function(long, lat, date, time, product=FALSE) {
     longlat = data.frame(st$longitude, st$latitude)
     distances = kernel_distance(longlat, c(long, lat))

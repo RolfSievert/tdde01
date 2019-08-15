@@ -3,7 +3,7 @@ library("kknn")
 # 1.1
 
 # Set working directory
-setwd("~/courses/tdde01")
+setwd("~/courses/tdde01/lab1/")
 
 # Read data
 data = read.csv("spambase.csv")

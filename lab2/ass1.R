@@ -78,7 +78,7 @@ rw = coef(glm.model)[2]
 cl = coef(glm.model)[3]
 border = 0.5
 k = -rw/cl
-m = -(intercept - border)/cl
+m = -(intercept)/cl
 # Print plot and line
 glm.plot = ggplot(data = crabs, 
                   mapping = aes(x=RW, 

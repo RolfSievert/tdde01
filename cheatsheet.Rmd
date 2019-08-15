@@ -1,0 +1,121 @@
+---
+title: "Cheatsheet TDDE01"
+author: "Rolf Sievert (rolsi701)"
+header-includes:
+    - \usepackage[final]{pdfpages}
+---
+
+# Miscellaneous
+
+## Vocabulary
+Generalization error: error on test data.
+
+## Info
+Test data is after validation, validation data is during testing of models.
+
+Naïve Bayes: doesn't combine information to classify, tries to classify with individual properties. Doesn't work well with linear separations.
+
+Gets biggest value:
+
+```{r, eval=FALSE}
+which_max(data)
+```
+
+How to read R scripts:
+
+*{r, code = readLines("lab1/ass2.R"), eval=FALSE}*
+
+Read data and split into random sets
+
+```{r eval=FALSE}
+video = read.csv("video.csv")
+data = subset(video, select=-utime)
+data_size = dim(data)[1]
+set.seed(12345)
+i1 = sample(1:data_size, floor(data_size*0.5))
+i2 = setdiff(1:data_size, i1)
+train = data[i1,]
+test = data[i2,]
+```
+
+## Plotting
+```{r eval=FALSE}
+library("ggplot2")
+library("gridExtra")
+plot.projection = ggplot() +
+geom_point(data=spectra, mapping=aes(x=PC1, y=PC2, color=class))
+grid.arrange(plot.projection)
+```
+
+```{r eval=FALSE}
+plot(data, type='l', col="red", ylim=c(100, 500), ylab="Error")
+plot(data2, type='l', col="blue")
+```
+
+## PCA and select principal components
+
+```{r eval=FALSE}
+library("stats")
+pca.fit = prcomp(data, scale.=T)
+# screeplot(pca.fit) to get all eigen values
+# Get eigen values (standard deviation ^ 2)
+lambda = pca.fit\$sdev^2
+sprintf("%2.3f", lambda/sum(lambda))
+PC1 = pca.fit\$x[,1]
+PC2 = pca.fit\$x[,2]
+```
+
+Use *princomp* for loadings to get eigenvectors.
+
+```{r eval=FALSE}
+library("stats")
+pca.fit = princomp(data)
+loadings(pca.fit)
+```
+
+## Confusion matrix
+
+```{r eval=FALSE}
+t <- table(prediction, true_values)
+(t[1,2]+t[2,1])/sum(t)
+```
+
+# Labs
+
+## Lab 1
+
+``` {r child="lab1/lab1.Rmd"}
+```
+
+## Lab 2
+
+``` {r child="lab2/lab2.Rmd"}
+```
+
+## Lab 3
+
+``` {r child="lab3/Rolf_Sievert.Rmd"}
+```
+
+# Other
+
+```{r, code = readLines("exams/2017-04-18/tenta_crabs.R"), eval=FALSE}
+```
+
+```{r, code = readLines("exams/2017-04-18/tenta_bank.R"), eval=FALSE}
+```
+
+```{r, code = readLines("exams/2018-01-11/tenta_1.R"), eval=FALSE}
+```
+
+```{r, code = readLines("exams/2018-01-11/tenta_2.R"), eval=FALSE}
+```
+
+```{r, code = readLines("exams/2018-01-11/tenta_2_2.R"), eval=FALSE}
+```
+
+\includepdf[pages=-]{lectureslides_shorter.pdf}
+
+\includepdf[pages=-, landscape=true]{rmarkdown-cheatsheet.pdf}
+
+\includepdf[pages=-, landscape=true]{extra.pdf}

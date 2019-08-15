@@ -1,0 +1,20 @@
+---
+title: Lab 1
+author: Rolf Sievert (rolsi701)
+---
+
+# Assignment 1
+
+```{r, code = readLines("lab1/ass1.R"), eval=FALSE}
+```
+
+# Assignment 2
+
+```{r, code = readLines("lab1/ass2.R"), eval=FALSE}
+```
+
+# Assignment 4
+
+```{r, code = readLines("lab1/ass4.R"), eval=FALSE}
+```
+

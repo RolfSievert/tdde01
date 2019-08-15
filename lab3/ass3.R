@@ -10,6 +10,8 @@ va = trva[26:50,] # Validation
 
 # Random initialization of the weights in the interval [-1, 1]
 winit = runif(31, -1, 1)
+
+# Loop over thresholds
 validations = c()
 for (i in 1:10) {
     nn = neuralnet(formula = Sin ~ Var, data = tr, hidden = 10, startweights = winit, threshold = i/1000)
